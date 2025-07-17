@@ -5,17 +5,6 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Set Streamlit page
-st.set_page_config(page_title="AI Chatbot", layout="wide")
-st.title("💧 Water Quality Assistant")
-
-# Load Model & Data
-model = joblib.load("water_model.pkl")
-df = pd.read_csv("water_potability (1).csv").fillna(df.mean())
-
-# Set OpenAI API Key from Streamlit Secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-
 # --- SIDEBAR ---
 st.sidebar.title("💧 Water Potability Checker")
 st.sidebar.write("Enter values below to test water quality")
