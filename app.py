@@ -20,7 +20,7 @@ df.fillna(df.mean(numeric_only=True), inplace=True)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # --- SIDEBAR: User Input ---
-st.sidebar.title("💧 Potability Checker")
+st.sidebar.title("💧Potability Checker")
 st.sidebar.write("Adjust the sliders below to test your water sample:")
 
 ph = st.sidebar.slider("pH", 0.0, 14.0, 7.0)
@@ -61,7 +61,7 @@ if st.button("🔍 Check Water Quality"):
 
 # Confusion Matrix Image
 st.subheader("📊 Confusion Matrix")
-st.image("confusion_matrix.png", caption="Random Forest Classifier Results", use_container_width=True)
+st.image("confusion_matrix.png", caption="Random Forest Classifier Results", use_column_width=True)
 
 # --- AI CHATBOT ---
 st.subheader("🤖 Ask AI about Water Quality, and Sanitation")
