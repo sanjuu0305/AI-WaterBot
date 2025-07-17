@@ -6,4 +6,4 @@ xgboost
 joblib
 matplotlib
 seaborn
-openai
+openai>=1.0.0
