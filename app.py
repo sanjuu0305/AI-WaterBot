@@ -5,6 +5,8 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+model =joblib.load("water_model.pkl")
+df = pd.read_csv("water_potability (1).csv").fillna(df.mean())
 # --- SIDEBAR ---
 st.sidebar.title("💧 Water Potability Checker")
 st.sidebar.write("Enter values below to test water quality")
@@ -48,8 +50,8 @@ cm_image = "confusion_matrix.png"
 st.image(cm_image, caption="Confusion Matrix (Random Forest)")
 
 # Chatbot Section
-st.subheader("🤖 Ask about Clean Water & Sanitation (SDG 6)")
-query = st.text_input("Ask your question about water quality or SDG 6")
+st.subheader("🤖 Ask about Clean Water & Sanitation ")
+query = st.text_input("Ask your question about water quality ")
 
 if query:
     with st.spinner("Thinking..."):
