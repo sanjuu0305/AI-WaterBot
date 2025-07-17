@@ -11,7 +11,7 @@ model = joblib.load("water_model.pkl")
 
 # Streamlit settings
 st.set_page_config(page_title="💧 Water Potability Predictor", layout="centered")
-st.title("💧 SDG 6: Clean Water & Sanitation")
+st.title("💧  Clean Water & Sanitation")
 st.subheader("Check if your water is safe to drink")
 
 st.markdown("Enter water quality values below:")
@@ -62,7 +62,7 @@ if csv_file:
     st.write("Prediction Results:")
     st.dataframe(uploaded_data)
     csv = uploaded_data.to_csv(index=False).encode("utf-8")
-    st.download_button("⬇️ Download Results CSV", csv, "water_predictions.csv", "text/csv")
+    st.download_button("⬇️ Download Results CSV", csv, "water_potability (1).csv", "text/csv")
 
 # ------------------------------------------------------------------
 # 🧠 ChatGPT-Style Assistant for SDG 6
@@ -77,7 +77,7 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 # Setup conversation memory
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "You are a helpful assistant for UN SDG 6: Clean Water and Sanitation. Answer questions about water quality, sanitation, sustainability, and related innovations."}
+        {"role": "system", "content": "You are a helpful assistant for Clean Water and Sanitation. Answer questions about water quality, sanitation, sustainability, and related innovations."}
     ]
 
 # User input
