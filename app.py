@@ -4,27 +4,7 @@ import numpy as np
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
-import openai
-from openai import OpenAI
 
-client =OpenAI (api_key =st.secret["OPENAI_API_KEY"])
-if "messages" not in st.session_state:
-    st.session_state["messages"]=[
-        {"role":"system","content":"you are an expert on Clean water And sanitation."}
-        
-    ]
-st.title("Ask anything about Clean Water")
-prompt =st.text_input("Ask about clean water, sanitation, potability..")
-
-if prompt :
-    st.session_state["messages"].append({"role":"user","content":prompt})
-    response=client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=st.session_state["messages"]
-    )
-    reply=response.choices[0].message.content
-    st.session_state["messages"].append({"role":"assistant","content":reply})
-    st.success(reply)
 # Set Streamlit page
 st.set_page_config(page_title="AI Chatbot", layout="wide")
 st.title("💧 Water Quality Assistant")
