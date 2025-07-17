@@ -61,7 +61,7 @@ if st.button("🔍 Check Water Quality"):
 
 # Confusion Matrix Image
 st.subheader("📊 Confusion Matrix")
-st.image("confusion_matrix.png", caption="Random Forest Classifier Results", use_container_width=True)
+st.image("confusion_matrix.png", caption="Random Forest Classifier Results", use_column_width=True)
 
 # --- AI CHATBOT ---
 st.subheader("🤖 Ask AI about Water Quality, and Sanitation")
