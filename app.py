@@ -68,7 +68,8 @@ st.subheader("🤖 Ask AI about Water Quality, and Sanitation")
 
 if "chat" not in st.session_state:
     st.session_state.chat = [
-        {"role": "system", "content": "You are an AI assistant specializing in Clean Water and Sanitation. Provide concise, informative answers on water quality, pollution, sanitation practices, and global sustainability."}
+        {"role": "system", "content": "You are an AI assistant specializing in Clean Water and Sanitation. Provide concise, informative answers on water quality, pollution, sanitation practices, and global sustainability."},
+        {"role": "user", "content": query}
     ]
 
 user_input = st.text_input("💬 Ask your question:")
@@ -76,7 +77,7 @@ if user_input:
     st.session_state.chat.append({"role": "user", "content": user_input})
 
     with st.spinner("Thinking..."):
-        response = client.chat.completions.create(
+        response = openai.ChatCompletions.create(
             model="gpt-3.5-turbo",
             messages=st.session_state.chat
         )
