@@ -8,6 +8,41 @@ import openai
 
 # Set Streamlit page
 st.set_page_config(page_title="AI Chatbot", layout="wide")
+st.title("💧 SDG 6 ChatGPT-Style Assistant")
+
+# Initialize chat history in session
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "system", "content": "You are an SDG 6 expert and clean water advocate. Help users understand water quality, pollution, and UN SDG 6 goals in a conversational tone."}
+    ]
+
+# Display chat history
+for msg in st.session_state.messages:
+    if msg["role"] != "system":
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+# User input
+user_input = st.chat_input("Ask about clean water, sanitation...")
+
+if user_input:
+    # Add user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    # Call OpenAI GPT
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=st.session_state.messages
+            )
+            reply = response.choices[0].message.content
+            st.markdown(reply)
+
+    # Save assistant reply
+    st.session_state.messages.append({"role": "assistant", "content": reply})
 
 # Load Model & Data
 model = joblib.load("water_model.pkl")
