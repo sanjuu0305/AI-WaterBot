@@ -1,25 +1,31 @@
+# app.py
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-import matplotlib.pyplot as plt
-import seaborn as sns
+from openai import OpenAI
 
-model =joblib.load("water_model.pkl")
-df = pd.read_csv("water_potability (1).csv").fillna(df.mean())
-# --- SIDEBAR ---
-st.sidebar.title("💧 Water Potability Checker")
-st.sidebar.write("Enter values below to test water quality")
+# Load model
+model = joblib.load("water_model.pkl")
 
-ph = st.sidebar.slider("pH", 0.0, 14.0, 7.0)
-hardness = st.sidebar.slider("Hardness", 50, 300, 150)
-solids = st.sidebar.slider("Solids", 1000, 50000, 10000)
-chloramines = st.sidebar.slider("Chloramines", 0.0, 15.0, 7.0)
-sulfate = st.sidebar.slider("Sulfate", 100.0, 500.0, 250.0)
-conductivity = st.sidebar.slider("Conductivity", 100.0, 1000.0, 500.0)
-organic_carbon = st.sidebar.slider("Organic Carbon", 2.0, 30.0, 15.0)
-trihalo = st.sidebar.slider("Trihalomethanes", 0.0, 120.0, 60.0)
-turbidity = st.sidebar.slider("Turbidity", 0.0, 10.0, 4.0)
+# Streamlit settings
+st.set_page_config(page_title="💧 Water Potability Predictor", layout="centered")
+st.title("💧 SDG 6: Clean Water & Sanitation")
+st.subheader("Check if your water is safe to drink")
+
+st.markdown("Enter water quality values below:")
+
+# Input sliders
+ph = st.slider("pH Level", 0.0, 14.0, 7.0)
+hardness = st.number_input("Hardness (mg/L)", min_value=50.0, max_value=500.0, value=150.0)
+solids = st.number_input("Solids (ppm)", min_value=100.0, max_value=50000.0, value=10000.0)
+chloramines = st.slider("Chloramines (ppm)", 0.0, 15.0, 7.0)
+sulfate = st.slider("Sulfate (mg/L)", 100.0, 500.0, 300.0)
+conductivity = st.number_input("Conductivity (μS/cm)", min_value=100.0, max_value=1000.0, value=450.0)
+organic_carbon = st.slider("Organic Carbon (ppm)", 0.0, 30.0, 10.0)
+trihalomethanes = st.slider("Trihalomethanes (μg/L)", 0.0, 120.0, 60.0)
+turbidity = st.slider("Turbidity (NTU)", 0.0, 10.0, 3.0)
 
 input_data = pd.DataFrame([{
     "ph": ph,
@@ -29,49 +35,66 @@ input_data = pd.DataFrame([{
     "Sulfate": sulfate,
     "Conductivity": conductivity,
     "Organic_carbon": organic_carbon,
-    "Trihalomethanes": trihalo,
+    "Trihalomethanes": trihalomethanes,
     "Turbidity": turbidity
 }])
 
-# --- MAIN LAYOUT ---
-st.title("🚰 Clean Water Prediction &  Chatbot")
-
-# Prediction Section
-st.subheader("🧪 Water Potability Prediction")
-
-if st.button("Check Water Quality"):
+if st.button("🔍 Predict Water Potability"):
     prediction = model.predict(input_data)[0]
-    result = "✅ Safe to Drink" if prediction == 1 else "⚠️ Not Safe to Drink"
-    st.success(result)
+    proba = model.predict_proba(input_data)[0][prediction]
 
-# Confusion Matrix
-st.subheader("📊 Model Confusion Matrix")
-cm_image = "confusion_matrix.png"
-st.image(cm_image, caption="Confusion Matrix (Random Forest)")
+    if prediction == 1:
+        st.success(f"✅ Safe to Drink (Confidence: {proba:.2%})")
+    else:
+        st.error(f"⚠️ Not Safe to Drink (Confidence: {proba:.2%})")
 
-# Chatbot Section
-st.subheader("🤖 Ask about Clean Water & Sanitation ")
-query = st.text_input("Ask your question about water quality ")
+# CSV Upload
+st.markdown("---")
+st.write("📄 Upload a CSV to predict multiple samples:")
+csv_file = st.file_uploader("Upload CSV", type=["csv"])
 
-if query:
-    with st.spinner("Thinking..."):
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant specialized in SDG 6 (Clean Water & Sanitation) and water quality."},
-                {"role": "user", "content": query}
-            ]
-        )
-        reply = response.choices[0].message.content
-        st.info(reply)
+if csv_file:
+    uploaded_data = pd.read_csv(csv_file)
+    uploaded_data.fillna(uploaded_data.mean(), inplace=True)
+    predictions = model.predict(uploaded_data)
+    uploaded_data["Prediction"] = predictions
+    uploaded_data["Result"] = uploaded_data["Prediction"].map({0: "Unsafe", 1: "Safe"})
+    st.write("Prediction Results:")
+    st.dataframe(uploaded_data)
+    csv = uploaded_data.to_csv(index=False).encode("utf-8")
+    st.download_button("⬇️ Download Results CSV", csv, "water_predictions.csv", "text/csv")
 
-# Visualization Section
-st.subheader("📈 Dataset Preview & Visualization")
-st.write(df.head())
+# ------------------------------------------------------------------
+# 🧠 ChatGPT-Style Assistant for SDG 6
+# ------------------------------------------------------------------
 
-# Feature Distribution Plot
-st.markdown("### Distribution of Safe vs Unsafe Water")
-fig, ax = plt.subplots()
-sns.countplot(data=df, x="Potability", palette="Set2")
-ax.set_xticklabels(["Unsafe", "Safe"])
-st.pyplot(fig)
+st.markdown("---")
+st.subheader("💬 Ask Our Water & Sanitation Assistant")
+
+# API key (from Streamlit Secrets)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+# Setup conversation memory
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [
+        {"role": "system", "content": "You are a helpful assistant for UN SDG 6: Clean Water and Sanitation. Answer questions about water quality, sanitation, sustainability, and related innovations."}
+    ]
+
+# User input
+user_query = st.chat_input("Ask about water, sanitation, potability...")
+
+if user_query:
+    st.session_state["messages"].append({"role": "user", "content": user_query})
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=st.session_state["messages"]
+    )
+
+    bot_reply = response.choices[0].message.content
+    st.session_state["messages"].append({"role": "assistant", "content": bot_reply})
+
+# Chat UI
+for msg in st.session_state["messages"][1:]:  # Skip system
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
