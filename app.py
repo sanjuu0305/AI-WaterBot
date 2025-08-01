@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import pandas as pd
 
 # ----------------- Gemini API Key Setup -----------------
-genai.configure(api_key="YOUR_GEMINI_API_KEY")  # 🔒 Replace with your key
+genai.configure(api_key="AIzaSyBxGwYnmngxF0QbA9mxy4ihJH1hDno7LYE")  # 🔒 Replace with your key
 model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # ----------------- Load Animation -----------------
