@@ -32,7 +32,7 @@ def geocode_area(area):
     try:
         url = "https://nominatim.openstreetmap.org/search"
         params = {"q": area, "format": "json", "limit": 1}
-        r = requests.get(url, params=params, headers={"User-Agent":"CleanWaterApp/1.0 (+your_email@example.com)"}, timeout=10)
+        r = requests.get(url, params=params, headers={"User-Agent":"CleanWaterApp/1.0 (+gamitsanju1430@gmail.com)"}, timeout=10)
         r.raise_for_status()
         data = r.json()
         if data:
