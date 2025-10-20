@@ -1,14 +1,4 @@
-streamlit
+streamlit>=1.20
 pandas
-numpy
-scikit-learn
-xgboost
-joblib
-matplotlib
-seaborn
-openai>=1.0.0
-streamlit-lottie
-google-generativeai
-geopy
 requests
-plotly
+openai    # optional - only if you enable LLM integration in the app
