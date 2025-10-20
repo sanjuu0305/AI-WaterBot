@@ -1,40 +1,46 @@
-# model_training.py
-
+# snippet: display readings on a map in Streamlit
+import streamlit as st
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
-import joblib
-import seaborn as sns
-import matplotlib.pyplot as plt
+import pydeck as pdk
 
-# Load dataset
-df = pd.read_csv("water_potability.csv")
-df.fillna(df.mean(), inplace=True)
+st.title("Local Water Readings Map")
 
-X = df.drop("Potability", axis=1)
-y = df["Potability"]
+# Example dataframe (replace with uploaded CSV / DB)
+df = pd.DataFrame([
+    {"site":"well_01","lat":21.1702,"lon":72.8311,"pH":6.2,"tds":820,"turbidity":15,"bacteria":"positive"},
+    {"site":"tap_02","lat":21.1715,"lon":72.8330,"pH":7.1,"tds":120,"turbidity":1,"bacteria":"negative"},
+    {"site":"pond_03","lat":21.1690,"lon":72.8290,"pH":8.9,"tds":400,"turbidity":8,"bacteria":"negative"},
+])
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Define simple risk scoring
+def risk_from_row(r):
+    score = 0
+    if r['pH'] < 6.5 or r['pH'] > 8.5: score += 1
+    if r['tds'] > 500: score += 2
+    elif r['tds'] > 300: score += 1
+    if r['turbidity'] > 5: score += 1
+    if r.get('bacteria') == 'positive': score += 3
+    if score >= 3: return "unsafe"
+    if score == 1 or score == 2: return "caution"
+    return "safe"
 
-# Train model
-model = RandomForestClassifier(n_estimators=100)
-model.fit(X_train, y_train)
+df['risk'] = df.apply(risk_from_row, axis=1)
+color_map = {"safe":[0,200,0],"caution":[255,165,0],"unsafe":[200,0,0]}
+df['color'] = df['risk'].map(color_map)
 
-# Predict
-y_pred = model.predict(X_test)
+# Pydeck map
+layer = pdk.Layer(
+    "ScatterplotLayer",
+    data=df,
+    get_position='[lon, lat]',
+    get_fill_color='color',
+    get_radius=50,
+    pickable=True
+)
+view_state = pdk.ViewState(latitude=df['lat'].mean(), longitude=df['lon'].mean(), zoom=13)
+r = pdk.Deck(layers=[layer], initial_view_state=view_state)
+st.pydeck_chart(r)
 
-# Save model
-joblib.dump(model, "water_model.pkl")
-
-# Confusion matrix
-cm = confusion_matrix(y_test, y_pred)
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-plt.title("Confusion Matrix")
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.savefig("confusion_matrix.png")
-
-# Print metrics
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print(classification_report(y_test, y_pred))
+# show table and flagged sites
+st.subheader("Flagged sites (unsafe / caution)")
+st.dataframe(df.sort_values(by='risk', ascending=False))
