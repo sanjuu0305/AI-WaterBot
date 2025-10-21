@@ -133,6 +133,16 @@ elif page == "Visualize":
         fig = px.histogram(df, x="risk_score", nbins=10, title="Risk Score Distribution")
         st.plotly_chart(fig, use_container_width=True)
 
+        ### FIX START
+        import numpy as np
+        df = df.rename(columns={"ph": "pH", "TDS": "tds"})
+        for col in ["pH", "tds", "risk_score", "turbidity", "temp"]:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+        df = df.dropna(subset=["pH", "tds", "risk_score"])
+        df["risk_score"] = np.clip(df["risk_score"], 0.01, 1.0)
+        ### FIX END
+
         st.write("### pH vs TDS (Colored by Prediction)")
         fig2 = px.scatter(df, x="pH", y="tds", color="prediction",
                           size="risk_score", hover_data=["turbidity", "temp"])
@@ -147,25 +157,28 @@ elif page == "Chatbot":
     st.markdown("Ask questions about water safety, purification, or your readings.")
 
     if use_llm and openai_key:
-        import openai
-        openai.api_key = openai_key
-        user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
-        if user_input:
-            with st.spinner("Thinking..."):
-                try:
-                    completion = openai.ChatCompletion.create(
-                        model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": "You are WaterBot, an expert in water quality."},
-                            {"role": "user", "content": user_input}
-                        ],
-                        max_tokens=300,
-                    )
-                    reply = completion["choices"][0]["message"]["content"]
-                    st.markdown(f"**WaterBot:** {reply}")
-                except Exception as e:
-                    st.error(f"LLM error: {e}")
-    else:
+       ### FIX START — Update to new OpenAI client (for openai>=1.0.0)
+from openai import OpenAI
+
+client = OpenAI(api_key=openai_key)
+user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
+
+if user_input:
+    with st.spinner("Thinking..."):
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are WaterBot, an expert in water quality."},
+                    {"role": "user", "content": user_input}
+                ],
+                max_tokens=300,
+            )
+            reply = completion.choices[0].message.content
+            st.markdown(f"**WaterBot:** {reply}")
+        except Exception as e:
+            st.error(f"LLM error: {e}")
+### FIX END
         st.warning("Enable LLM and provide API key in sidebar to chat with WaterBot.")
 
 # ------------------- ABOUT PAGE -------------------
