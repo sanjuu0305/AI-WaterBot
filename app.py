@@ -257,8 +257,7 @@ elif page == "Chatbot":
             st.error(f"Gemini error: {e}")
     else:
         st.warning("Enable LLM and provide your Google AI Studio API key in sidebar to chat with WaterBot.")
-    else:
-        st.warning("Enable LLM and provide API key in sidebar to chat with WaterBot. For now, you can ask domain questions on the Predictor page using heuristic predictions.")
+    
 
 # ------------------- ABOUT PAGE -------------------
 elif page == "About":
