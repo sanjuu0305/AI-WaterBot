@@ -240,33 +240,23 @@ elif page == "Chatbot":
     st.markdown("Ask questions about water safety, purification, or your readings.")
     st.components.v1.html(lottie_html("https://assets3.lottiefiles.com/packages/lf20_kdx6cani.json", height=120), height=130)
 
+    # Use Google Gemini API
     if use_llm and openai_key:
-        # Lazy import to avoid dependency if not used
         try:
-            import openai
-            openai.api_key = openai_key
-        except Exception as e:
-            st.error(f"OpenAI import error: {e}")
-            openai = None
+            import google.generativeai as genai
+            genai.configure(api_key=openai_key)
 
-        if openai is not None:
-            prompt = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
-            if st.button("Ask WaterBot") and prompt:
+            user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
+            if st.button("Ask WaterBot") and user_input:
                 with st.spinner("WaterBot thinking..."):
-                    try:
-                        completion = openai.ChatCompletion.create(
-                            model="gpt-4o-mini" if "gpt-4o-mini" in openai.Model.list().data[0].id else "gpt-4o",
-                            messages=[
-                                {"role": "system", "content": "You are WaterBot, an expert in water quality and safe water practices. Provide short, clear, non-judgmental advice and request lab testing when appropriate."},
-                                {"role": "user", "content": prompt}
-                            ],
-                            max_tokens=300,
-                            temperature=0.2,
-                        )
-                        reply = completion["choices"][0]["message"]["content"]
-                        st.markdown(f"**WaterBot:** {reply}")
-                    except Exception as e:
-                        st.error(f"LLM error: {e}")
+                    model = genai.GenerativeModel("gemini-1.5-flash")
+                    prompt = f"You are WaterBot, an expert in water quality. Explain clearly and simply: {user_input}"
+                    response = model.generate_content(prompt)
+                    st.markdown(f"**WaterBot:** {response.text}")
+        except Exception as e:
+            st.error(f"Gemini error: {e}")
+    else:
+        st.warning("Enable LLM and provide your Google AI Studio API key in sidebar to chat with WaterBot.")
     else:
         st.warning("Enable LLM and provide API key in sidebar to chat with WaterBot. For now, you can ask domain questions on the Predictor page using heuristic predictions.")
 
