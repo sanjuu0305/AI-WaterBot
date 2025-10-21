@@ -26,3 +26,10 @@ flask-cors
 
 # Optional: for environment variable management
 python-dotenv
+
+streamlit
+pandas
+requests
+plotly
+google-generativeai
+urllib3
