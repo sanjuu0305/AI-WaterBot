@@ -157,11 +157,11 @@ elif page == "Chatbot":
     st.markdown("Ask questions about water safety, purification, or your readings.")
 
     if use_llm and openai_key:
-       ### FIX START — Update to new OpenAI client (for openai>=1.0.0)
-import OpenAI
+        ### FIX START — Update to new OpenAI client (for openai>=1.0.0)
+        import OpenAI
 
-client = OpenAI(api_key=openai_key)
-user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
+        client = OpenAI(api_key=openai_key)
+        user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
 
 if user_input:
     with st.spinner("Thinking..."):
