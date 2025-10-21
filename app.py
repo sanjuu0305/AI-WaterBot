@@ -158,7 +158,7 @@ elif page == "Chatbot":
 
     if use_llm and openai_key:
        ### FIX START — Update to new OpenAI client (for openai>=1.0.0)
-from openai import OpenAI
+import OpenAI
 
 client = OpenAI(api_key=openai_key)
 user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
