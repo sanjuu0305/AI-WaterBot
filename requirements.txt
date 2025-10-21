@@ -1,7 +1,28 @@
+# Core Frameworks
 streamlit
-pandas
-plotly
+flask
 requests
+pandas
+numpy
+scikit-learn
+joblib
+
+# Google AI Studio (Gemini) API
 google-generativeai
-fastapi
-uvicorn
+
+# Chatbot and NLP
+transformers
+torch
+nltk
+
+# Geolocation and Map
+geopy
+folium
+
+# Frontend + Integration
+streamlit-folium
+streamlit-chat
+flask-cors
+
+# Optional: for environment variable management
+python-dotenv
