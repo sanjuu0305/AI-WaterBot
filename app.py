@@ -242,68 +242,25 @@ elif page == "Chatbot":
     st.markdown("Ask questions about water safety, purification, or your readings.")
     st.components.v1.html(lottie_html("https://assets3.lottiefiles.com/packages/lf20_kdx6cani.json", height=120), height=130)
 
-    # Use Google Gemini / GenAI SDK
     if use_llm and api_key:
-        genai = None
         try:
-            # Try importing the official SDK
-            import google.generativeai as genai  # preferred package name
-        except Exception:
-            try:
-                from google import genai  # alternate import used in some docs
-            except Exception as e:
-                genai = None
-                st.error("google-generativeai SDK is not installed or import failed. Run `pip install google-generativeai` and restart the app.")
-                st.stop()
-
-        if genai is not None:
-            # configure API key (SDKs differ; try common configure patterns)
-            try:
-                if hasattr(genai, "configure"):
-                    genai.configure(api_key=api_key)
-            except Exception:
-                # Some versions use Client() or environment variables instead
-                pass
+            import google.generativeai as genai
+            genai.configure(api_key=api_key)
 
             user_input = st.text_input("You:", placeholder="e.g., What does high TDS mean?")
             if st.button("Ask WaterBot") and user_input:
                 with st.spinner("WaterBot thinking..."):
-                    reply_text = None
-                    last_error = None
-                    # Try calling the SDK in a few safe ways (covers common versions)
                     try:
-                        # Pattern used in many examples
-                        model = genai.GenerativeModel("gemini-1.5-flash")
+                        model = genai.GenerativeModel("gemini-1.5-flash-latest")
                         response = model.generate_content(user_input)
-                        reply_text = getattr(response, "text", None) or response.get("text") if isinstance(response, dict) else str(response)
-                    except Exception as e1:
-                        last_error = e1
-                        try:
-                            # Alternative: genai.Client().models.generate_content(...)
-                            client = getattr(genai, "Client", None)
-                            if client:
-                                c = client()
-                                resp = c.models.generate_content(model="gemini-1.5-flash", contents=user_input)
-                                # resp may be dict-like
-                                reply_text = resp.get("text") if isinstance(resp, dict) else getattr(resp, "text", str(resp))
-                            else:
-                                # Some docs show top-level genai.generate_text or genai.generate_content
-                                if hasattr(genai, "generate_content"):
-                                    resp = genai.generate_content(model="gemini-1.5-flash", contents=user_input)
-                                    reply_text = resp.get("text") if isinstance(resp, dict) else getattr(resp, "text", str(resp))
-                                elif hasattr(genai, "generate_text"):
-                                    resp = genai.generate_text(model="gemini-1.5-flash", input=user_input)
-                                    reply_text = getattr(resp, "result", None) or getattr(resp, "text", None) or str(resp)
-                        except Exception as e2:
-                            last_error = e2
-
-                    if reply_text:
-                        st.markdown(f"**WaterBot:** {reply_text}")
-                    else:
-                        st.error(f"Failed to generate response. Last error: {last_error}")
+                        st.markdown(f"**WaterBot:** {response.text}")
+                    except Exception as e:
+                        st.error(f"⚠️ Failed to generate response: {e}")
+        except Exception as e:
+            st.error(f"⚠️ Gemini setup error: {e}")
+            st.info("Make sure you've installed `google-generativeai` using `pip install -U google-generativeai`.")
     else:
         st.warning("Enable Gemini (Google AI) and paste your Google AI Studio API key in the sidebar to chat with WaterBot.")
-
 # ------------------- ABOUT PAGE -------------------
 elif page == "About":
     st.subheader("🌍 About CleanWater Predictor")
