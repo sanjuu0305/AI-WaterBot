@@ -2,6 +2,6 @@ streamlit
 pandas
 plotly
 requests
-openai==0.28
+google-generativeai
 fastapi
 uvicorn
