@@ -89,7 +89,7 @@ with col1:
 st.title("💧 AI-based Clean Water Predictor")
 st.markdown("Analyze your water quality using sensor data and an explainable AI heuristic. Predict safety, visualize results, chat with WaterBot, and share findings.")
 with col2:
-lottie_url_header = "https://assets6.lottiefiles.com/packages/lf20_j1adxtyb.json"
+lottie_url_header = "https://app.lottiefiles.com/share/960270d5-babe-4ee1-adaa-1975ea9e5b44"
 st.components.v1.html(lottie_html(lottie_url_header, height=160), height=170)
 st.markdown("---")
 st.markdown("</div>", unsafe_allow_html=True)
