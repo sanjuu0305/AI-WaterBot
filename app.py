@@ -81,15 +81,25 @@ h1, h2, h3 {
 
 # ------------------- HEADER -------------------
 st.markdown("<div class='fade-section'>", unsafe_allow_html=True)
+
 col1, col2 = st.columns([2, 1])
+
 with col1:
-    st.title("💧 AI-based Clean Water Predictor")
+    st.markdown("""
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <h1 style="margin: 0;">🤖💧 AI-based Clean Water Predictor</h1>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("Analyze your water quality using sensor data and an explainable AI heuristic. Predict safety, visualize results, chat with WaterBot, and share findings.")
+
 with col2:
-    lottie_url_header = "https://assets6.lottiefiles.com/packages/lf20_j1adxtyb.json"
-    st.components.v1.html(lottie_html(lottie_url_header, height=160), height=170)
+    # 💦 Cute water robot animation
+    lottie_url_header = "https://lottie.host/5ccf8c4d-98f1-4a4f-9a37-b04b1a457dee/TvOdXV3uKR.json"  # 💧 Cute robot pouring water animation
+    st.components.v1.html(lottie_html(lottie_url_header, height=180), height=190)
+
 st.markdown("---")
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 # ------------------- SIDEBAR NAV -------------------
 st.sidebar.markdown("<div class='sidebar-title'>✨ Navigation</div>", unsafe_allow_html=True)
