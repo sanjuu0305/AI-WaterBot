@@ -89,7 +89,7 @@ with col1:
 st.title("💧 AI-based Clean Water Predictor")
 st.markdown("Analyze your water quality using sensor data and an explainable AI heuristic. Predict safety, visualize results, chat with WaterBot, and share findings.")
 with col2:
-lottie_url_header = "https://app.lottiefiles.com/share/960270d5-babe-4ee1-adaa-1975ea9e5b44"
+lottie_url_header = ""
 st.components.v1.html(lottie_html(lottie_url_header, height=160), height=170)
 st.markdown("---")
 st.markdown("</div>", unsafe_allow_html=True)
@@ -224,25 +224,37 @@ st.dataframe(df.describe(include="all").T)
 st.markdown("</div>", unsafe_allow_html=True)
 
 elif "Chatbot" in page:
-st.markdown("<div class='fade-section'>", unsafe_allow_html=True)
-st.subheader("💬 WaterBot Assistant")
-st.components.v1.html(lottie_html("https://assets3.lottiefiles.com/packages/lf20_kdx6cani.json", 120), height=130)
-if use_llm and api_key:
-try:
-import google.generativeai as genai
-genai.configure(api_key=api_key)
-user_input = st.text_input("You:", placeholder="💭 Ask about water safety...")
-if st.button("🤖 Ask WaterBot") and user_input:
-with st.spinner("WaterBot thinking..."):
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
-response = model.generate_content(user_input)
-st.markdown(f"WaterBot: {response.text}")
-except Exception as e:
-st.error(f"⚠️ Gemini setup error: {e}")
-st.info("Make sure you've installed google-generativeai via pip install -U google-generativeai.")
-else:
-st.warning("Enable Gemini and paste your API key to chat with WaterBot.")
-st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div class='fade-section'>", unsafe_allow_html=True)
+    st.subheader("💬 WaterBot Assistant")
+
+    # Load local Lottie animation
+    from streamlit_lottie import st_lottie
+    import json
+
+    def load_lottiefile(filepath: str):
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    lottie_chatbot = load_lottiefile("Live chatbot (3).json")
+    st_lottie(lottie_chatbot, height=200, key="chatbot_lottie")
+
+    if use_llm and api_key:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=api_key)
+            user_input = st.text_input("You:", placeholder="💭 Ask about water safety...")
+            if st.button("🤖 Ask WaterBot") and user_input:
+                with st.spinner("WaterBot thinking..."):
+                    model = genai.GenerativeModel("gemini-1.5-flash-latest")
+                    response = model.generate_content(user_input)
+                    st.markdown(f"**WaterBot:** {response.text}")
+        except Exception as e:
+            st.error(f"⚠️ Gemini setup error: {e}")
+            st.info("Make sure you've installed google-generativeai via `pip install -U google-generativeai`.")
+    else:
+        st.warning("Enable Gemini and paste your API key to chat with WaterBot.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 elif "About" in page:
 st.markdown("<div class='fade-section'>", unsafe_allow_html=True)
