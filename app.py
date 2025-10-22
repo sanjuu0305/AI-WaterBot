@@ -94,7 +94,7 @@ with col1:
 
 with col2:
     # 💦 Cute water robot animation
-    lottie_url_header = "https://lottie.host/5ccf8c4d-98f1-4a4f-9a37-b04b1a457dee/TvOdXV3uKR.json"  # 💧 Cute robot pouring water animation
+    lottie_url_header = "Live chatbot (1).json"  # 💧 Cute robot pouring water animation
     st.components.v1.html(lottie_html(lottie_url_header, height=180), height=190)
 
 st.markdown("---")
