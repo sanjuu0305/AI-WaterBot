@@ -231,7 +231,7 @@ elif "Chatbot" in page:
         with open(filepath, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    lottie_chatbot = load_lottiefile("Live chatbot (3).json")
+    lottie_chatbot = load_lottiefile("Live chatbot.json")
     st_lottie(lottie_chatbot, height=200, key="chatbot_lottie")
 
     if use_llm and api_key:
