@@ -235,20 +235,22 @@ elif "Chatbot" in page:
     st_lottie(lottie_chatbot, height=200, key="chatbot_lottie")
 
     if use_llm and api_key:
-        try:
-            import google.generativeai as genai
-            genai.configure(api_key=api_key)
-            user_input = st.text_input("You:", placeholder="💭 Ask about water safety...")
-            if st.button("🤖 Ask WaterBot") and user_input:
-                with st.spinner("WaterBot thinking..."):
-                    model = genai.GenerativeModel("gemini-1.5-flash-latest")
-                    response = model.generate_content(user_input)
-                    st.markdown(f"**WaterBot:** {response.text}")
-        except Exception as e:
-            st.error(f"⚠️ Gemini setup error: {e}")
-            st.info("Make sure you've installed `google-generativeai` via `pip install -U google-generativeai`.")
-    else:
-        st.warning("Enable Gemini and paste your API key to chat with WaterBot.")
+    try:
+        import google.generativeai as genai
+        import os
+        genai.configure(api_key=api_key or os.getenv("GOOGLE_API_KEY"))
+        user_input = st.text_input("You:", placeholder="💭 Ask about water safety...")
+        if st.button("🤖 Ask WaterBot") and user_input:
+            with st.spinner("WaterBot thinking..."):
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                response = model.generate_content(user_input)
+                st.markdown("---")
+                st.markdown(f"**WaterBot:** {response.text}")
+    except Exception as e:
+        st.error(f"⚠️ Gemini setup error: {e}")
+        st.info("Make sure you've installed `google-generativeai` via `pip install -U google-generativeai`.")
+else:
+    st.warning("Enable Gemini and paste your API key to chat with WaterBot.")
     st.markdown("</div>", unsafe_allow_html=True)
 
 elif "About" in page:
